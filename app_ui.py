@@ -1,6 +1,7 @@
 import streamlit as st
 from subjects import subjects_by_major
 from pdf_generator import generate_pdf
+from config import TOTAL_MAJOR_HOURS
 
 # =========================
 # PAGE CONFIG
@@ -87,7 +88,7 @@ label {
 # HEADER
 # =========================
 st.markdown("<div class='main-title'>🎓 Academic Advisor System</div>", unsafe_allow_html=True)
-st.markdown("<div class='sub-title'>Your Smart Academic AI Companion</div>", unsafe_allow_html=True)
+st.markdown("<div class='sub-title'>Smart • Clean • AI-powered Academic Guidance</div>", unsafe_allow_html=True)
 
 
 # =====================================================
@@ -102,17 +103,17 @@ if st.session_state.step == 1:
     gpa = st.number_input("GPA", 0.0, 100.0, step=0.1)
     year = st.selectbox("Year", ["1st Year", "2nd Year", "3rd Year", "4th Year"])
     major = st.selectbox("Major", ["AI & DS", "CYS", "CSD", "CIS"])
-    hours = st.number_input("Completed Hours", 0, 200)
 
     st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("<div class='card'>", unsafe_allow_html=True)
-    st.subheader("📚 Select Completed Subjects")                             
+    st.subheader("📚 Select Completed Subjects")
 
     selected_subjects = st.multiselect(
         "Choose the subjects you have completed:",
-        subjects_by_major[major]
+        list(subjects_by_major[major].keys())
     )
+
     st.markdown("</div>", unsafe_allow_html=True)
 
     if st.button("Next ➡️ Enter Grades"):
@@ -125,8 +126,7 @@ if st.session_state.step == 1:
                 "student_id": student_id,
                 "gpa": gpa,
                 "year": year,
-                "major": major,
-                "hours": hours
+                "major": major
             }
             st.session_state.selected_subjects = selected_subjects
             st.session_state.step = 2
@@ -176,9 +176,36 @@ elif st.session_state.step == 3:
     st.write("👤 Student ID:", data["student_id"])
     st.write("📚 Major:", data["major"])
     st.write("📈 GPA:", data["gpa"])
-    st.write("⏳ Completed Hours:", data["hours"])
     st.write("📌 Year:", data["year"])
 
+    # =========================
+    # HOURS CALCULATION
+    # =========================
+
+    if len(st.session_state.selected_subjects) == 0:
+        st.error("No subjects selected")
+        st.stop()
+
+    taken_hours = sum(
+        subjects_by_major[data["major"]][sub]
+        for sub in st.session_state.selected_subjects
+    )
+
+    remaining_hours = TOTAL_MAJOR_HOURS - taken_hours
+
+    progress = taken_hours / TOTAL_MAJOR_HOURS if TOTAL_MAJOR_HOURS > 0 else 0
+
+    st.markdown("### 🎓 Degree Progress")
+    st.write(f"📌 Completed Hours: {taken_hours}")
+    st.write(f"📊 Total Required Hours: {TOTAL_MAJOR_HOURS}")
+    st.write(f"⏳ Remaining Hours: {remaining_hours}")
+
+    st.progress(progress)
+    st.write(f"📈 Progress: {progress*100:.2f}%")
+   
+    # =========================
+    # GRADES
+    # =========================
     st.markdown("### ✅ Subjects & Grades")
 
     total = 0
@@ -193,7 +220,7 @@ elif st.session_state.step == 3:
     st.markdown(f"### ⭐ Average Grade: **{avg:.2f}**")
 
     # =========================
-    # RULE-BASED WARNINGS
+    # RULES
     # =========================
     warnings = []
     recommendations = []
@@ -215,7 +242,6 @@ elif st.session_state.step == 3:
         warnings.append("No major warnings detected.")
         recommendations.append("Keep up the good work and maintain your performance.")
 
-    # عرضهم بالواجهة
     st.markdown("### ⚠️ Warnings")
     for w in warnings:
         st.warning(w)
