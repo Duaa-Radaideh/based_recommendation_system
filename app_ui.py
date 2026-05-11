@@ -87,7 +87,7 @@ label {
 # HEADER
 # =========================
 st.markdown("<div class='main-title'>🎓 Academic Advisor System</div>", unsafe_allow_html=True)
-st.markdown("<div class='sub-title'>Smart • Clean • AI-powered Academic Guidance</div>", unsafe_allow_html=True)
+st.markdown("<div class='sub-title'>Your Smart Academic AI Companion</div>", unsafe_allow_html=True)
 
 
 # =====================================================
