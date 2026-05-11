@@ -88,7 +88,7 @@ label {
 # HEADER
 # =========================
 st.markdown("<div class='main-title'>🎓 Academic Advisor System</div>", unsafe_allow_html=True)
-st.markdown("<div class='sub-title'>Smart • Clean • AI-powered Academic Guidance</div>", unsafe_allow_html=True)
+st.markdown("<div class='sub-title'>  </div>", unsafe_allow_html=True)
 
 
 # =====================================================
@@ -102,25 +102,48 @@ if st.session_state.step == 1:
     student_id = st.text_input("Student ID")
     gpa = st.number_input("GPA", 0.0, 100.0, step=0.1)
     year = st.selectbox("Year", ["1st Year", "2nd Year", "3rd Year", "4th Year"])
-    major = st.selectbox("Major", ["AI & DS", "CYS", "CSD", "CIS"])
+
+    # ✅ Major from data مباشرة (no hardcoding)
+    major = st.selectbox("Major", list(subjects_by_major.keys()))
+
+    # 🔒 حماية إضافية
+    if major not in subjects_by_major:
+        st.error("Invalid major selected")
+        st.stop()
+
+    # 🔄 reset subjects when major changes
+    if "last_major" not in st.session_state:
+        st.session_state.last_major = major
+
+    if st.session_state.last_major != major:
+        st.session_state.selected_subjects = []
+        st.session_state.last_major = major
 
     st.markdown("</div>", unsafe_allow_html=True)
 
+    # =================================================
     st.markdown("<div class='card'>", unsafe_allow_html=True)
     st.subheader("📚 Select Completed Subjects")
 
+    # ✅ safe access to subjects
+    major_subjects = subjects_by_major.get(major, {})
+
     selected_subjects = st.multiselect(
         "Choose the subjects you have completed:",
-        list(subjects_by_major[major].keys())
+        list(major_subjects.keys())
     )
 
     st.markdown("</div>", unsafe_allow_html=True)
 
+    # =================================================
     if st.button("Next ➡️ Enter Grades"):
+
         if student_id.strip() == "":
             st.error("Please enter Student ID!")
+
         elif len(selected_subjects) == 0:
             st.error("Please select at least one subject!")
+
         else:
             st.session_state.student_data = {
                 "student_id": student_id,
@@ -128,11 +151,11 @@ if st.session_state.step == 1:
                 "year": year,
                 "major": major
             }
+
             st.session_state.selected_subjects = selected_subjects
             st.session_state.step = 2
+
             st.rerun()
-
-
 # =====================================================
 # STEP 2: ENTER GRADES
 # =====================================================
