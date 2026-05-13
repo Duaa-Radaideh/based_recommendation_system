@@ -6,7 +6,7 @@ def extract_features(gpa, weighted_avg, completed_hours):
     gpa_level = "High" if gpa >= 85 else "Medium" if gpa >= 70 else "Low"
     performance = "Excellent" if weighted_avg >= 85 else "Good" if weighted_avg >= 70 else "Weak"
 
-    progress = min((completed_hours / 140) * 100, 100)
+    progress = min((completed_hours / 134) * 100, 100)
 
     return {
         "gpa_level": gpa_level,
