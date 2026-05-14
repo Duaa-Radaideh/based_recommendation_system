@@ -125,14 +125,22 @@ if st.session_state.step == 1:
     st.markdown("<div class='card'>", unsafe_allow_html=True)
     st.subheader("📚 Select Completed Subjects")
 
-    # ✅ safe access to subjects
     major_subjects = subjects_by_major.get(major, {})
 
-    selected_subjects = st.multiselect(
-        "Choose the subjects you have completed:",
-        list(major_subjects.keys())
+    mandatory_subjects = major_subjects.get("Mandatory", {})
+    optional_subjects = major_subjects.get("Optional", {})
+
+    selected_mandatory = st.multiselect(
+        "✅ Completed Mandatory Subjects:",
+        list(mandatory_subjects.keys())
     )
 
+    selected_optional = st.multiselect(
+        "⭐ Completed Optional Subjects:",
+        list(optional_subjects.keys())
+    )
+
+    selected_subjects = selected_mandatory + selected_optional
     st.markdown("</div>", unsafe_allow_html=True)
 
     # =================================================
@@ -209,8 +217,14 @@ elif st.session_state.step == 3:
         st.error("No subjects selected")
         st.stop()
 
+    major_subjects = subjects_by_major[data["major"]]
+    mandatory_subjects = major_subjects.get("Mandatory", {})
+    optional_subjects = major_subjects.get("Optional", {})
+
+    all_subjects = {**mandatory_subjects, **optional_subjects}
+
     taken_hours = sum(
-        subjects_by_major[data["major"]][sub]
+        all_subjects[sub]
         for sub in st.session_state.selected_subjects
     )
 
