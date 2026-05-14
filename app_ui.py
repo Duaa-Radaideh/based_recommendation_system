@@ -124,31 +124,35 @@ if st.session_state.step == 1:
     # =================================================
     st.markdown("<div class='card'>", unsafe_allow_html=True)
     st.subheader("📚 Select Completed Subjects")
+        
+    major_subjects = subjects_by_major.get(major)
     
-    major_subjects = subjects_by_major.get(major, {})
-
-    if "Mandatory" not in major_subjects:
+    if not major_subjects:
+        st.error("Major not found in dataset")
+        st.stop()
     
-        selected_subjects = st.multiselect(
-            "📚 Choose Completed Subjects:",
-            list(major_subjects.keys())
-        )
-    else:
+    if isinstance(major_subjects, dict) and "Mandatory" in major_subjects:
     
         mandatory_subjects = major_subjects.get("Mandatory", {})
         optional_subjects = major_subjects.get("Optional", {})
     
         selected_mandatory = st.multiselect(
-            "✅ Completed Mandatory Subjects:",
+            "Mandatory Subjects",
             list(mandatory_subjects.keys())
         )
     
         selected_optional = st.multiselect(
-            "⭐ Completed Optional Subjects:",
+            "Optional Subjects",
             list(optional_subjects.keys())
         )
     
         selected_subjects = selected_mandatory + selected_optional
+    
+    else:
+        selected_subjects = st.multiselect(
+            "Subjects",
+            list(major_subjects.keys())
+        )
     st.markdown("</div>", unsafe_allow_html=True)
 
     # =================================================
