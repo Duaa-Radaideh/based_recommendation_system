@@ -124,35 +124,15 @@ if st.session_state.step == 1:
     # =================================================
     st.markdown("<div class='card'>", unsafe_allow_html=True)
     st.subheader("📚 Select Completed Subjects")
-        
-    major_subjects = subjects_by_major.get(major)
-    
-    if not major_subjects:
-        st.error("Major not found in dataset")
-        st.stop()
-    
-    if isinstance(major_subjects, dict) and "Mandatory" in major_subjects:
-    
-        mandatory_subjects = major_subjects.get("Mandatory", {})
-        optional_subjects = major_subjects.get("Optional", {})
-    
-        selected_mandatory = st.multiselect(
-            "Mandatory Subjects",
-            list(mandatory_subjects.keys())
-        )
-    
-        selected_optional = st.multiselect(
-            "Optional Subjects",
-            list(optional_subjects.keys())
-        )
-    
-        selected_subjects = selected_mandatory + selected_optional
-    
-    else:
-        selected_subjects = st.multiselect(
-            "Subjects",
-            list(major_subjects.keys())
-        )
+
+    # ✅ safe access to subjects
+    major_subjects = subjects_by_major.get(major, {})
+
+    selected_subjects = st.multiselect(
+        "Choose the subjects you have completed:",
+        list(major_subjects.keys())
+    )
+
     st.markdown("</div>", unsafe_allow_html=True)
 
     # =================================================
@@ -229,14 +209,8 @@ elif st.session_state.step == 3:
         st.error("No subjects selected")
         st.stop()
 
-    major_subjects = subjects_by_major[data["major"]]
-    mandatory_subjects = major_subjects.get("Mandatory", {})
-    optional_subjects = major_subjects.get("Optional", {})
-
-    all_subjects = {**mandatory_subjects, **optional_subjects}
-
     taken_hours = sum(
-        all_subjects[sub]
+        subjects_by_major[data["major"]][sub]
         for sub in st.session_state.selected_subjects
     )
 
