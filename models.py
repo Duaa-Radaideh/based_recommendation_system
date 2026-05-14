@@ -84,4 +84,4 @@ def build_student_profile(student_id, student_row, grades):
         "failed_subjects": failed_subjects,
         "features": features,
         "rules": rules_output
-    }
+    }   }
