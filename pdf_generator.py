@@ -1,7 +1,6 @@
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import A4
-from reportlab.lib import colors
 
 
 # =========================
@@ -9,7 +8,7 @@ from reportlab.lib import colors
 # =========================
 def generate_pdf(profile, avg, weighted, final_score):
 
-    file_name = f"{profile.get('student_id', 'unknown')}_transcript.pdf"
+    file_name = f"{profile.get('student_id', 'unknown')}_report.pdf"
     doc = SimpleDocTemplate(file_name, pagesize=A4)
 
     styles = getSampleStyleSheet()
@@ -18,7 +17,7 @@ def generate_pdf(profile, avg, weighted, final_score):
     # =========================
     # TITLE
     # =========================
-    content.append(Paragraph("🎓 Official Academic Transcript", styles["Title"]))
+    content.append(Paragraph("🎓 Academic Advisor Report", styles["Title"]))
     content.append(Spacer(1, 12))
 
     # =========================
@@ -27,84 +26,46 @@ def generate_pdf(profile, avg, weighted, final_score):
     content.append(Paragraph(f"<b>Student ID:</b> {profile.get('student_id','N/A')}", styles["Normal"]))
     content.append(Paragraph(f"<b>Major:</b> {profile.get('major','N/A')}", styles["Normal"]))
     content.append(Paragraph(f"<b>Year:</b> {profile.get('year','N/A')}", styles["Normal"]))
-    content.append(Paragraph(f"<b>GPA:</b> {profile.get('gpa','N/A')}", styles["Normal"]))
 
     content.append(Spacer(1, 12))
 
     # =========================
-    # TRANSCRIPT TABLE
+    # SCORES
     # =========================
-    content.append(Paragraph("📚 Subjects Transcript", styles["Heading2"]))
-    content.append(Spacer(1, 10))
+    content.append(Paragraph(f"<b>GPA:</b> {profile.get('gpa','N/A')}", styles["Normal"]))
+    content.append(Paragraph(f"<b>Average:</b> {round(avg, 2) if avg else 0}", styles["Normal"]))
+    content.append(Paragraph(f"<b>Weighted Average:</b> {round(weighted, 2) if weighted else 0}", styles["Normal"]))
+    content.append(Paragraph(f"<b>Final Score:</b> {round(final_score, 2) if final_score else 0}", styles["Normal"]))
 
-    # Header
-    table_data = [["Subject", "Grade", "Status", "Hours"]]
-
-    # Grades from profile
-    grades = profile.get("grades", {})
-
-    # Get all subjects from major
-    major_subjects = subjects_by_major.get(profile["major"], {})
-
-    all_subjects = {
-        **major_subjects.get("Mandatory", {}),
-        **major_subjects.get("Optional", {})
-    }
-
-    total_hours = 0
-
-    # Fill table rows
-    for subject, grade in grades.items():
-
-        hours = all_subjects.get(subject, 0)
-        status = "Pass" if grade >= 60 else "Fail"
-
-        total_hours += hours if status == "Pass" else 0
-
-        table_data.append([
-            subject,
-            str(grade),
-            status,
-            str(hours)
-        ])
+    content.append(Spacer(1, 12))
 
     # =========================
-    # TABLE STYLE
+    # WARNINGS
     # =========================
-    table = Table(table_data)
+    content.append(Paragraph("⚠️ Warnings:", styles["Heading2"]))
 
-    table.setStyle(TableStyle([
-        ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#7a2a3a")),
-        ("TEXTCOLOR", (0,0), (-1,0), colors.white),
-        ("ALIGN", (0,0), (-1,-1), "CENTER"),
-        ("FONTNAME", (0,0), (-1,0), "Helvetica-Bold"),
-        ("FONTSIZE", (0,0), (-1,0), 11),
-        ("GRID", (0,0), (-1,-1), 0.5, colors.grey),
-        ("BACKGROUND", (0,1), (-1,-1), colors.whitesmoke),
-    ]))
+    warnings = profile.get("rules", {}).get("warnings", [])
 
-    content.append(table)
-    content.append(Spacer(1, 15))
+    if not warnings:
+        content.append(Paragraph("- No warnings detected", styles["Normal"]))
+    else:
+        for w in warnings:
+            content.append(Paragraph(f"- {w}", styles["Normal"]))
+
+    content.append(Spacer(1, 12))
 
     # =========================
-    # SUMMARY SECTION
+    # RECOMMENDATIONS
     # =========================
-    content.append(Paragraph("📊 Academic Summary", styles["Heading2"]))
+    content.append(Paragraph("✅ Recommendations:", styles["Heading2"]))
 
-    content.append(Paragraph(f"<b>Average:</b> {round(avg,2)}", styles["Normal"]))
-    content.append(Paragraph(f"<b>Weighted Average:</b> {round(weighted,2)}", styles["Normal"]))
-    content.append(Paragraph(f"<b>Final Score:</b> {round(final_score,2)}", styles["Normal"]))
+    recommendations = profile.get("rules", {}).get("recommendations", [])
 
-    content.append(Spacer(1, 10))
-
-    content.append(Paragraph(f"<b>Passed Hours:</b> {total_hours}", styles["Normal"]))
-    content.append(Paragraph(f"<b>Total GPA:</b> {profile.get('gpa','N/A')}", styles["Normal"]))
-
-    # =========================
-    # FOOTER
-    # =========================
-    content.append(Spacer(1, 15))
-    content.append(Paragraph("Generated by Academic Advisor AI System 🤖", styles["Normal"]))
+    if not recommendations:
+        content.append(Paragraph("- No recommendations", styles["Normal"]))
+    else:
+        for r in recommendations:
+            content.append(Paragraph(f"- {r}", styles["Normal"]))
 
     # =========================
     # BUILD PDF
