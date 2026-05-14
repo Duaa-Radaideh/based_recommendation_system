@@ -3,34 +3,6 @@
 # =========================
 
 TOTAL_MAJOR_HOURS = 134
-#============================
-
-university_requirements = {
-    "علوم عسكرية": 3,
-    "مهارات حياتية": 3,
-    "القيادة و المسؤولية المجتمعية": 3,
-    "مهارات عربي 101": 3,
-    "مهارات إنجليزي 101": 3,
-    "الريادة و الابتكار": 3,
-    "التربية الوطنية": 3
-}
-
-university_mandatory = {
-    "التنمية المستدامة": 3,
-    "الثروات المعدنية في الاردن": 3,
-    "السلامة المرورية": 3,
-    "الفيزياء والمجتمع": 3,
-    "مصادر الإشعاع وتطبيقاته": 3,
-    "القيادة و المسؤولية المجتمعية": 3,
-    "مبادئ التفكير": 3,
-    "الإرشاد الأسري": 3,
-    "الثقافة الإسلامية": 3,
-    "أخلاقيات العمل": 3,
-    "حقوق الانسان": 3,
-    "امدخل إلى العنف الأسري": 3,
-    "التعليم الإلكتروني": 3 
-}
-
 subjects_by_major = {
 
     "AI & DS": {
@@ -44,8 +16,8 @@ subjects_by_major = {
         "OOP 1": 3,
         "Lab OOP1": 1,
         "Data Structures": 3,
+        "Introduction to Datascience":3,
         "Probability & Statistics": 3,
-        "Introduction to Data Science":3,
         "Linear Algebra": 3,
         "Databases": 3,
         "Lab Data Base": 1,
@@ -143,22 +115,4 @@ subjects_by_major = {
         "Database Administration": 3,
         "Graduation Project": 3
     }
-}
-
-#=======================#
-#OPTINAL AI COURSES
-#=======================#
-optional_it_courses = {
-    "Scientific Research Methods in IT & Communications": 3,
-    "Smart Devices Programming": 3,
-    "Cloud Computing": 3,
-    "Computer Vision": 3,
-    "Game Programming": 3,
-    "Unstructured Databases (NoSQL)": 3,
-    "Digital Image Processing": 3,
-    "Special Topics I": 3,
-    "Special Topics II": 3,
-    "Robotics Programming": 3,
-    "Big Data Analytics": 3,
-    "Bioinformatics": 3
 }
